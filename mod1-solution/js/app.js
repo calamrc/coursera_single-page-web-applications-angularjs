@@ -7,10 +7,14 @@
   LCController.$inject = ['$scope'];
   function LCController($scope) {
     $scope.message = "";
+    $scope.messageStyle = "";
+    $scope.inputStyle = "";
     $scope.lunch = "";
     $scope.checkLunch = function () {
       if($scope.lunch === "") {
         $scope.message = "Please enter data first!";
+        $scope.messageStyle = "color: red;"
+        $scope.inputStyle = "border-color: red;"
         return;
       }
       var lunch_list = $scope.lunch.split(",");
@@ -27,9 +31,9 @@
       else {
         $scope.message = "Too much!";
       }
-
-    }
-
+      $scope.messageStyle = "color: green;"
+      $scope.inputStyle = "border-color: green;"
+    };
   }
 
 })();
