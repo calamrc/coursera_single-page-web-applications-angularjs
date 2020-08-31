@@ -12,7 +12,6 @@
     tbc.name = "";
     tbc.quantity = "";
     tbc.to_buy = ShoppingListCheckOffService.to_buy;
-    tbc.addItem = ShoppingListCheckOffService.addItem;
 
     tbc.addItem = function() {
       ShoppingListCheckOffService.addItem({
