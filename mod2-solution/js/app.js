@@ -38,7 +38,13 @@
   function ShoppingListCheckOffService() {
     var service = this;
 
-    service.to_buy = [];
+    service.to_buy = [
+      {name: "eggs", quantity: 12},
+      {name: "butter", quantity: 2},
+      {name: "brown sugar", quantity: 1},
+      {name: "white sugar", quantity: 1},
+      {name: "flour", quantity: 3}
+    ];
     service.bought = [];
 
     service.addItem = function(item) {
@@ -46,7 +52,6 @@
     };
 
     service.alreadyBought = function(index) {
-      console.log(index);
       var item = service.to_buy.pop(index);
       service.bought.push(item);
     };
