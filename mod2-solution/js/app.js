@@ -6,7 +6,7 @@
     .controller("AlreadyBoughtController", AlreadyBoughtController)
     .service("ShoppingListCheckOffService", ShoppingListCheckOffService);
 
-  ToBuyController.$inject(["ShoppingListCheckOffService"]);
+  ToBuyController.$inject = ["ShoppingListCheckOffService"];
   function ToBuyController(ShoppingListCheckOffService) {
     var tbc = this;
     tbc.name = "";
@@ -27,7 +27,7 @@
 
 
 
-  AlreadyBoughtController.$inject(["ShoppingListCheckOffService"]);
+  AlreadyBoughtController.$inject = ["ShoppingListCheckOffService"];
   function AlreadyBoughtController(ShoppingListCheckOffService) {
     var abc = this;
 
@@ -52,8 +52,8 @@
     };
 
     service.alreadyBought = function(index) {
-      var item = service.to_buy.pop(index);
-      service.bought.push(item);
+      var item = service.to_buy.splice(index, 1);
+      service.bought.push(item[0]);
     };
 
   }
