@@ -3,14 +3,16 @@
 
   angular.module('NarrowItDown', [])
     .controller("NarrowItDownController", NarrowItDownController)
-    .service('MenuCategoriesService', MenuCategoriesService)
+    .service('MenuSearchService', MenuSearchService)
     .directive("foundItems", FoundItemsDirective)
     .constant('ApiBasePath', "https://davids-restaurant.herokuapp.com");
 
 
-  NarrowItDownController.$inject = ["MenuCategoriesService"];
-  function NarrowItDownController (MenuCategoriesService) {
+  NarrowItDownController.$inject = ["MenuSearchService"];
+  function NarrowItDownController (MenuSearchService) {
     var narrow = this;
+
+    narrow.test = "<span>Test</span>"
 
     narrow.searchTerm = "";
     narrow.found = [];
@@ -20,53 +22,56 @@
       narrow.found.splice(itemIndex, 1);
     };
 
-    narrow.getMenuItems = function () {
-      narrow.found = [];
+    narrow.getMatchedMenuItems = function () {
       narrow.clicked = true;
-      if (narrow.searchTerm !== "") {
-        var promise = MenuCategoriesService.getMenuCategories();
-
-        promise
-          .then(function (response) {
-            var categories = response.data;
-            for (var i in categories) {
-              var shortName = categories[i].short_name;
-              var new_promise = MenuCategoriesService.getMenuForCategory(shortName);
-              new_promise
-                .then(function (response) {
-                  var menuForCategory = response.data.menu_items;
-                  for (var j in menuForCategory) {
-                    try {
-                      var description = menuForCategory[j].description.toLowerCase();
-                      if (description.indexOf(narrow.searchTerm.toLowerCase()) !== -1) {
-                        var item = {
-                          name: menuForCategory[j].name,
-                          short_name: menuForCategory[j].short_name,
-                          description: menuForCategory[j].description,
-                        }
-                        narrow.found.push(item);
-                      }
-                    }
-                    catch {
-                      console.log("no description");
-                    }
-                  }
-                })
-                .catch(function (error) {
-                  console.log(error);
-                })
-            }
-          })
-          .catch(function (error) {
-            console.log("Something went terribly wrong.");
-          });
+      if (narrow.searchTerm.trim() !== "" ) {
+        narrow.found = MenuSearchService.getMatchedMenuItems(narrow.searchTerm);
+      }
+      else {
+        narrow.found = [];
       }
     };
   }
 
-  MenuCategoriesService.$inject = ['$http', 'ApiBasePath'];
-  function MenuCategoriesService($http, ApiBasePath) {
+  MenuSearchService.$inject = ['$http', 'ApiBasePath'];
+  function MenuSearchService($http, ApiBasePath) {
     var service = this;
+
+    service.getMatchedMenuItems = function (searchTerm) {
+      var foundItems = [];
+      var promise = service.getMenuForCategory();
+      promise
+        .then(function (response) {
+          var menuItems = response.data.menu_items;
+          for (var j in menuItems) {
+            try {
+              var description = menuItems[j].description;
+              var findInDescription = description.toLowerCase().indexOf(searchTerm.toLowerCase().trim()) !== -1;
+              var name = menuItems[j].name;
+              var findInName = name.toLowerCase().indexOf(searchTerm.toLowerCase().trim()) !== -1;
+              var short_name = menuItems[j].short_name;
+              var findInShortName = short_name.toLowerCase().indexOf(searchTerm.toLowerCase().trim()) !== -1;
+
+              if (findInDescription || findInName || findInShortName) {
+                //var re = new RegExp(searchTerm, "gi");
+                //var items = {
+                  //name: name.replace(re, "<span>" + searchTerm + "</span>"),
+                  //short_name: short_name.replace(re, "<span>" + searchTerm + "</span>"),
+                  //description: description.replace(re, "<span>" + searchTerm + "</span>"),
+                //}
+                foundItems.push(menuItems[j]);
+              }
+            }
+            catch {
+              console.log("no description");
+            }
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        })
+      return foundItems;
+    }
 
     service.getMenuCategories = function () {
       var response = $http({
@@ -80,9 +85,6 @@
       var response = $http({
         method: "GET",
         url: (ApiBasePath + "/menu_items.json"),
-        params: {
-          category: shortName
-        }
       });
       return response;
     };
@@ -119,13 +121,13 @@
 
     function displayCookieWarning() {
       var warningElem = element.find("div.error");
-      warningElem.slideDown(900);
+      warningElem.slideDown(500);
     }
 
 
     function removeCookieWarning() {
       var warningElem = element.find("div.error");
-      warningElem.slideUp(900);
+      warningElem.slideUp(500);
     }
   }
 
@@ -133,10 +135,7 @@
     var found = this;
 
     found.checkFoundItems = function () {
-      if (found.clicked) {
-        return (found.foundItems.length > 0);
-      }
-      return true;
+      return found.foundItems.length > 0;
     }
   }
 

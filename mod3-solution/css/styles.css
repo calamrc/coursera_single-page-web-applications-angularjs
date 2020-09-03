@@ -28,7 +28,6 @@ input[type="text"] {
 .error {
   float: left;
   clear: both;
-  display: none;
 }
 
 #found-items {
