@@ -1,4 +1,4 @@
-<div id="found-items" ng-if="found.checkFoundItems()">
+<div id="found-items" ng-if="found.foundItems.length > 0">
   <h3>Search result(s): {{found.foundItems.length}}</h3>
   <div ng-repeat="item in found.foundItems">
     <div class="text">
@@ -6,14 +6,10 @@
       <div class="item-description">{{item.description}}</div>
     </div>
     <button ng-click="found.onRemove({index: $index})">
-      Don't want this one! {{$index}}
+      Don't want this one!
     </button>
   </div>
 </div>
-<!--<ol>-->
-<!--<li ng-repeat="item in list.items">-->
-<!--{{ item.quantity }} of {{ item.name }}-->
-<!--<button ng-click="list.onRemove({index: $index});">Remove Item</button>-->
-<!--</li>-->
-<!--</ol>-->
-<!--<div class="error">OH THE HORROR! COOKIES DETECTED!</div>-->
+<div class="error">
+  <h3>Nothing found</h3>
+</div>
